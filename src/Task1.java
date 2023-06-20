@@ -4,7 +4,7 @@ import java.util.Scanner;
 public class Task1 {
     // creation of constants whose values can't be changed, can be accessed only within the class,
     // shared among all the instances of the class
-    /*Declaring constants according to the naming conventions mentioned in the Oracle Docs*/
+    /* Declaring constants according to the naming conventions mentioned in the Oracle Docs */
     private static final int TOTAL_OF_QUEUE1 = 2;
     private static final int TOTAL_OF_QUEUE2 = 3;
     private static final int TOTAL_OF_QUEUE3 = 5;
@@ -84,9 +84,6 @@ public class Task1 {
                 default:
                     System.out.println("Please insert a valid queue number!");
             }
-            if (stock <= 10) {
-                System.out.println("WARNING!! Low burger count, please re-stock burgers");
-            }
         }
     }
 
@@ -133,8 +130,63 @@ public class Task1 {
         }
     }
 
-    public static  void removeServedCustomer() {
+    public static void removeServedCustomer() {
+        Scanner input = new Scanner(System.in);
+        System.out.print("Choose a queue to proceed (1, 2 or 3) : ");
+        int queueNo = input.nextInt();
 
+        switch (queueNo) {
+            case 1:
+                if (elementCountOfQueue1 > 0) {
+                    if (stock > 10) {
+                        String customer = queue1[0];
+                        shiftElementToLeftInQueue(queue1, elementCountOfQueue1, 1);
+                        elementCountOfQueue1--;
+                        stock -= 5;
+                        System.out.println("Served customer " + customer + " is removed from queue1");
+                    } else {
+                        System.out.println("WARNING!! Low burger count, please re-stock burgers to serve customers");
+                    }
+
+                } else {
+                    System.out.println("Queue1 is empty! Please try another one");
+                }
+                break;
+            case 2:
+                if (elementCountOfQueue2 > 0) {
+                    if (stock > 10) {
+                        String customer = queue2[0];
+                        shiftElementToLeftInQueue(queue2, elementCountOfQueue2, 1);
+                        elementCountOfQueue2--;
+                        stock -= 5;
+                        System.out.println("Served customer " + customer + " is removed from queue2");
+                    } else {
+                        System.out.println("WARNING!! Low burger count, please re-stock burgers to serve customers");
+                    }
+
+                } else {
+                    System.out.println("Queue2 is empty! Please try another one");
+                }
+                break;
+            case 3:
+                if (elementCountOfQueue3 > 0) {
+                    if (stock > 10) {
+                        String customer = queue3[0];
+                        shiftElementToLeftInQueue(queue3, elementCountOfQueue3, 1);
+                        elementCountOfQueue3--;
+                        stock -= 5;
+                        System.out.println("Served customer " + customer + " is removed from queue3");
+                    } else {
+                        System.out.println("WARNING!! Low burger count, please re-stock burgers to serve customers");
+                    }
+
+                } else {
+                    System.out.println("Queue3 is empty! Please try another one");
+                }
+                break;
+            default:
+                System.out.println("Please insert a valid queue number!");
+        }
     }
 
     // This function shifts each element in the queue to the left by assigning the value of the next element to the current element
@@ -178,11 +230,18 @@ public class Task1 {
                 case "RCQ":
                     removeCustomer();
                     break;
+                case "104":
+                case "PCQ":
+                    removeServedCustomer();
+                    break;
+                case "108":
+                case "STK":
+                    System.out.println("Remaining stock count : " + stock);
+                    break;
                 case "999":
                 case "EXT":
                     System.out.println("Program's exiting....");
                     break;
-
             }
             System.out.println();
         } while (!(option.equals("999") || option.equals("EXT")));
