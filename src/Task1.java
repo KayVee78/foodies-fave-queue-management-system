@@ -12,9 +12,13 @@ public class Task1 {
     // creation of variables which can be accessed only within the class and
     // shared among all the instances of the class
     private static int stock;
-    private static String queue1[];
-    private static String queue2[];
-    private static String queue3[];
+    private static String[] queue1;
+    private static String[] queue2;
+    private static String[] queue3;
+    private static String[] queue1Visualization;
+    private static String[] queue2Visualization;
+    private static String[] queue3Visualization;
+
     // Declaring element count of queues
     private static int elementCountOfQueue1;
     private static int elementCountOfQueue2;
@@ -43,6 +47,33 @@ public class Task1 {
         System.out.println();
     }
 
+    public static void viewAllQueues(String[] queue1Visualization, String[] queue2Visualization, String[] queue3Visualization) {
+        int maxLength = Math.max(Math.max(queue1Visualization.length, queue2Visualization.length), queue3Visualization.length);
+        System.out.println("*****************");
+        System.out.println("*   Cashiers    *");
+        System.out.println("*****************");
+        for (int i = 0; i < maxLength; i++) {
+            if (i < queue1Visualization.length) {
+                System.out.print(queue1Visualization[i] + "\t\t");
+            } else {
+                System.out.print("\t\t");
+            }
+
+            if (i < queue2Visualization.length) {
+                System.out.print(queue2Visualization[i] + "\t\t");
+            } else {
+                System.out.print("\t\t");
+            }
+
+            if (i < queue3Visualization.length) {
+                System.out.print(queue3Visualization[i]);
+            }
+
+            System.out.println();
+        }
+        System.out.println();
+    }
+
     public static void addCustomer() {
         Scanner input = new Scanner(System.in);
         System.out.print("Choose a queue to proceed (1, 2 or 3) : ");
@@ -55,7 +86,9 @@ public class Task1 {
                     if (elementCountOfQueue1 < TOTAL_OF_QUEUE1) {
                         System.out.print("Insert customer's name : ");
                         String customerName = input.next();
-                        queue1[elementCountOfQueue1++] = customerName;
+                        queue1Visualization[elementCountOfQueue1] = "O";
+                        queue1[elementCountOfQueue1] = customerName;
+                        elementCountOfQueue1++;
                         System.out.println(customerName + " is added to Queue 1");
                     } else {
                         System.out.println("Queue 1 is full, please try another queue!");
@@ -65,7 +98,9 @@ public class Task1 {
                     if (elementCountOfQueue2 < TOTAL_OF_QUEUE2) {
                         System.out.print("Insert customer's name : ");
                         String customerName = input.next();
-                        queue2[elementCountOfQueue2++] = customerName;
+                        queue2Visualization[elementCountOfQueue2] = "O";
+                        queue2[elementCountOfQueue2] = customerName;
+                        elementCountOfQueue2++;
                         System.out.println(customerName + " is added to Queue 2");
                     } else {
                         System.out.println("Queue 2 is full, please try another queue!");
@@ -75,7 +110,9 @@ public class Task1 {
                     if (elementCountOfQueue3 < TOTAL_OF_QUEUE3) {
                         System.out.print("Insert customer's name : ");
                         String customerName = input.next();
-                        queue3[elementCountOfQueue3++] = customerName;
+                        queue3Visualization[elementCountOfQueue3] = "O";
+                        queue3[elementCountOfQueue3] = customerName;
+                        elementCountOfQueue3++;
                         System.out.println(customerName + " is added to Queue 3");
                     } else {
                         System.out.println("Queue 3 is full, please try another queue!");
@@ -98,7 +135,7 @@ public class Task1 {
             case 1:
                 if (position >= 1 && position <= elementCountOfQueue1) {
                     String customer = queue1[position - 1];
-                    shiftElementToLeftInQueue(queue1, elementCountOfQueue1, position);
+                    shiftElementToLeftInQueue(queue1, queue1Visualization, elementCountOfQueue1, position);
                     elementCountOfQueue1--;
                     System.out.println(customer + " is removed from queue 1 ");
                 } else {
@@ -108,7 +145,7 @@ public class Task1 {
             case 2:
                 if (position >= 1 && position <= elementCountOfQueue2) {
                     String customer = queue2[position - 1];
-                    shiftElementToLeftInQueue(queue2, elementCountOfQueue2, position);
+                    shiftElementToLeftInQueue(queue2, queue2Visualization, elementCountOfQueue2, position);
                     elementCountOfQueue2--;
                     System.out.println(customer + " is removed from queue 2 ");
                 } else {
@@ -118,7 +155,7 @@ public class Task1 {
             case 3:
                 if (position >= 1 && position <= elementCountOfQueue3) {
                     String customer = queue3[position - 1];
-                    shiftElementToLeftInQueue(queue3, elementCountOfQueue3, position);
+                    shiftElementToLeftInQueue(queue3, queue3Visualization, elementCountOfQueue3, position);
                     elementCountOfQueue3--;
                     System.out.println(customer + " is removed from queue 3 ");
                 } else {
@@ -140,7 +177,7 @@ public class Task1 {
                 if (elementCountOfQueue1 > 0) {
                     if (stock > 10) {
                         String customer = queue1[0];
-                        shiftElementToLeftInQueue(queue1, elementCountOfQueue1, 1);
+                        shiftElementToLeftInQueue(queue1, queue1Visualization, elementCountOfQueue1, 1);
                         elementCountOfQueue1--;
                         stock -= 5;
                         System.out.println("Served customer " + customer + " is removed from queue1");
@@ -156,7 +193,7 @@ public class Task1 {
                 if (elementCountOfQueue2 > 0) {
                     if (stock > 10) {
                         String customer = queue2[0];
-                        shiftElementToLeftInQueue(queue2, elementCountOfQueue2, 1);
+                        shiftElementToLeftInQueue(queue2, queue2Visualization, elementCountOfQueue2, 1);
                         elementCountOfQueue2--;
                         stock -= 5;
                         System.out.println("Served customer " + customer + " is removed from queue2");
@@ -172,7 +209,7 @@ public class Task1 {
                 if (elementCountOfQueue3 > 0) {
                     if (stock > 10) {
                         String customer = queue3[0];
-                        shiftElementToLeftInQueue(queue3, elementCountOfQueue3, 1);
+                        shiftElementToLeftInQueue(queue3, queue3Visualization, elementCountOfQueue3, 1);
                         elementCountOfQueue3--;
                         stock -= 5;
                         System.out.println("Served customer " + customer + " is removed from queue3");
@@ -194,11 +231,13 @@ public class Task1 {
     // At the end, last element of the queue is set to null
     /* This function is shifts elements to left, the customer at the specified location
     would be removed and the size of the queue will be reduced by 1 */
-    public static void shiftElementToLeftInQueue(String[] queue, int size, int position) {
+    public static void shiftElementToLeftInQueue(String[] queue, String[] visualisingQueue, int size, int position) {
         for (int i = position; i < size; i++) {
             queue[i - 1] = queue[i];
+            visualisingQueue[i - 1] = visualisingQueue[i];
         }
         queue[size - 1] = null;
+        visualisingQueue[size - 1] = "X";
     }
 
     public static void main(String[] args) {
@@ -206,15 +245,21 @@ public class Task1 {
         queue1 = new String[TOTAL_OF_QUEUE1];
         queue2 = new String[TOTAL_OF_QUEUE2];
         queue3 = new String[TOTAL_OF_QUEUE3];
-        // Initialize array with X for the visualization
-        Arrays.fill(queue1, "X");
-        Arrays.fill(queue2, "X");
-        Arrays.fill(queue3, "X");
+        queue1Visualization = new String[TOTAL_OF_QUEUE1];
+        queue2Visualization = new String[TOTAL_OF_QUEUE2];
+        queue3Visualization = new String[TOTAL_OF_QUEUE3];
+
+        // Initialize visualization array with X for the visualization
+        Arrays.fill(queue1Visualization, "X");
+        Arrays.fill(queue2Visualization, "X");
+        Arrays.fill(queue3Visualization, "X");
+
         // Initializing element count of arrays to 0
         elementCountOfQueue1 = 0;
         elementCountOfQueue2 = 0;
         elementCountOfQueue3 = 0;
         String option;
+
         do {
             viewMenu();
             Scanner input = new Scanner(System.in);
@@ -222,6 +267,10 @@ public class Task1 {
             option = input.next();
 
             switch (option) {
+                case "100":
+                case "VFQ":
+                    viewAllQueues(queue1Visualization, queue2Visualization, queue3Visualization);
+                    break;
                 case "102":
                 case "ACQ":
                     addCustomer();
