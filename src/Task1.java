@@ -74,6 +74,29 @@ public class Task1 {
         System.out.println();
     }
 
+    public static void viewEmptyQueues() {
+        System.out.println("*********************");
+        System.out.println("*   Empty Queues    *");
+        System.out.println("*********************");
+        if (elementCountOfQueue1 < TOTAL_OF_QUEUE1) {
+            System.out.println("Queue 1\t: EMPTY");
+        } else {
+            System.out.println("Queue 1\t: OCCUPIED");
+        }
+
+        if (elementCountOfQueue2 < TOTAL_OF_QUEUE2) {
+            System.out.println("Queue 2\t: EMPTY");
+        } else {
+            System.out.println("Queue 2\t: OCCUPIED");
+        }
+
+        if (elementCountOfQueue3 < TOTAL_OF_QUEUE3) {
+            System.out.println("Queue 3\t: EMPTY");
+        } else {
+            System.out.println("Queue 3\t: OCCUPIED");
+        }
+    }
+
     public static void addCustomer() {
         Scanner input = new Scanner(System.in);
         System.out.print("Choose a queue to proceed (1, 2 or 3) : ");
@@ -229,7 +252,7 @@ public class Task1 {
     // This function shifts each element in the queue to the left by assigning the value of the next element to the current element
     // moves all the elements after the specified position one step to the left.
     // At the end, last element of the queue is set to null
-    /* This function is shifts elements to left, the customer at the specified location
+    /* This function shifts elements to left, the customer at the specified location
     would be removed and the size of the queue will be reduced by 1 */
     public static void shiftElementToLeftInQueue(String[] queue, String[] visualisingQueue, int size, int position) {
         for (int i = position; i < size; i++) {
@@ -270,6 +293,10 @@ public class Task1 {
                 case "100":
                 case "VFQ":
                     viewAllQueues(queue1Visualization, queue2Visualization, queue3Visualization);
+                    break;
+                case "101":
+                case "VEQ":
+                    viewEmptyQueues();
                     break;
                 case "102":
                 case "ACQ":
