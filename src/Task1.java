@@ -249,11 +249,21 @@ public class Task1 {
         }
     }
 
-    // This function shifts each element in the queue to the left by assigning the value of the next element to the current element
-    // moves all the elements after the specified position one step to the left.
-    // At the end, last element of the queue is set to null
+    public static void sortCustomersAlphabetically() {
+        String[] customersFromAll3Queues = mergeAll3arrays(queue1, queue2, queue3);
+        sort(customersFromAll3Queues);
+
+        // prints the sorted names
+        for (int i = 0; i < customersFromAll3Queues.length; i++) {
+            if (customersFromAll3Queues[i] != null) {
+                System.out.println(customersFromAll3Queues[i]);
+            }
+        }
+    }
+
     /* This function shifts elements to left, the customer at the specified location
     would be removed and the size of the queue will be reduced by 1 */
+    // At the end, last element of the queue is set to null
     public static void shiftElementToLeftInQueue(String[] queue, String[] visualisingQueue, int size, int position) {
         for (int i = position; i < size; i++) {
             queue[i - 1] = queue[i];
@@ -261,6 +271,46 @@ public class Task1 {
         }
         queue[size - 1] = null;
         visualisingQueue[size - 1] = "X";
+    }
+
+    // Variable arguments - this allows to accept variable no. of arguments of the String[] type to the method mergeAll3arrays()
+    // This will be treated as array of arrays String[][] internally
+    public static String[] mergeAll3arrays(String[]... arrays) {
+        //flattens a 2D array by iterating over its elements and merging them into a 1D array
+        int arrayLength = 0;
+        for (String[] array : arrays) {
+            arrayLength += array.length;
+        }
+
+        String[] mergedArray = new String[arrayLength];
+        int currentIndex = 0; //keeps track of the current position of the mergedArray
+
+        for (String[] array : arrays) {
+            for (String element : array) {
+                if (element != null) {
+                    mergedArray[currentIndex] = element;
+                    currentIndex++;
+                }
+                ;
+            }
+        }
+
+        return mergedArray;
+    }
+
+    // using bubble sort to sort out the names alphabetically
+    private static void sort(String[] array) {
+        int n = array.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (array[j] != null && array[j + 1] != null && array[j].compareTo(array[j + 1]) > 0) {
+                    // elements are swapped
+                    String temp = array[j];
+                    array[j] = array[j + 1];
+                    array[j + 1] = temp;
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -271,6 +321,7 @@ public class Task1 {
         queue1Visualization = new String[TOTAL_OF_QUEUE1];
         queue2Visualization = new String[TOTAL_OF_QUEUE2];
         queue3Visualization = new String[TOTAL_OF_QUEUE3];
+
 
         // Initialize visualization array with X for the visualization
         Arrays.fill(queue1Visualization, "X");
@@ -309,6 +360,10 @@ public class Task1 {
                 case "104":
                 case "PCQ":
                     removeServedCustomer();
+                    break;
+                case "105":
+                case "VCS":
+                    sortCustomersAlphabetically();
                     break;
                 case "108":
                 case "STK":
