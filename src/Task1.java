@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -261,6 +262,53 @@ public class Task1 {
         }
     }
 
+    public static void storeProgramDataIntoFile() {
+        try {
+            FileWriter fileWriter = new FileWriter("text.txt");
+            fileWriter.write("Stock   : " + stock + "\n");
+            fileWriter.write("\nQueue 1 :\n");
+            for (int i = 0; i < elementCountOfQueue1; i++) {
+                fileWriter.write(queue1[i] + "\n");
+            }
+            fileWriter.write("\nQueue 2 :\n");
+            for (int i = 0; i < elementCountOfQueue2; i++) {
+                fileWriter.write(queue2[i] + "\n");
+            }
+            fileWriter.write("\nQueue 3 :\n");
+            for (int i = 0; i < elementCountOfQueue3; i++) {
+                fileWriter.write(queue3[i] + "\n");
+            }
+            fileWriter.flush();
+            fileWriter.close();
+            System.out.println("Program data stored successfully in the text file!");
+        } catch (IOException e) {
+            System.out.println("Failed to process request: " + e.getMessage());
+        }
+    }
+
+    public static void loadProgramDataFromFile() {
+        try (FileReader fileReader = new FileReader("text.txt");
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
+            String stock = bufferedReader.readLine();
+            System.out.println(stock);
+            String line; // store each line read from the file
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+            } // Reads a line from the file using the readLine() method of the BufferedReader and assigns it to the variable called line
+        } catch (IOException e) {
+            System.out.println("Failed to load data : " + e.getMessage());
+        }
+    }
+
+    public static void restockBurgerCount() {
+        while (stock < 50) {
+            stock += 5;
+
+        }
+        System.out.println("Burgers Restocked! Stock includes " + stock + " burgers");
+    }
+
     /* This function shifts elements to left, the customer at the specified location
     would be removed and the size of the queue will be reduced by 1 */
     // At the end, last element of the queue is set to null
@@ -321,13 +369,10 @@ public class Task1 {
         queue1Visualization = new String[TOTAL_OF_QUEUE1];
         queue2Visualization = new String[TOTAL_OF_QUEUE2];
         queue3Visualization = new String[TOTAL_OF_QUEUE3];
-
-
         // Initialize visualization array with X for the visualization
         Arrays.fill(queue1Visualization, "X");
         Arrays.fill(queue2Visualization, "X");
         Arrays.fill(queue3Visualization, "X");
-
         // Initializing element count of arrays to 0
         elementCountOfQueue1 = 0;
         elementCountOfQueue2 = 0;
@@ -365,9 +410,21 @@ public class Task1 {
                 case "VCS":
                     sortCustomersAlphabetically();
                     break;
+                case "106":
+                case "SPD":
+                    storeProgramDataIntoFile();
+                    break;
+                case "107":
+                case "LPD":
+                    loadProgramDataFromFile();
+                    break;
                 case "108":
                 case "STK":
                     System.out.println("Remaining stock count : " + stock);
+                    break;
+                case "109":
+                case "AFS":
+                    restockBurgerCount();
                     break;
                 case "999":
                 case "EXT":
