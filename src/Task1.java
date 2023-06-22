@@ -108,36 +108,24 @@ public class Task1 {
             switch (queueNo) {
                 case "1":
                     if (elementCountOfQueue1 < TOTAL_OF_QUEUE1) {
-                        System.out.print("Insert customer's name : ");
-                        String customerName = input.next();
-                        queue1Visualization[elementCountOfQueue1] = "O";
-                        queue1[elementCountOfQueue1] = customerName;
+                        repeatingCodesOfAddCustomer(elementCountOfQueue1, queue1Visualization, queue1, queueNo);
                         elementCountOfQueue1++;
-                        System.out.println(customerName + " is added to Queue 1");
                     } else {
                         System.out.println("Queue 1 is full, please try another queue!");
                     }
                     break;
                 case "2":
                     if (elementCountOfQueue2 < TOTAL_OF_QUEUE2) {
-                        System.out.print("Insert customer's name : ");
-                        String customerName = input.next();
-                        queue2Visualization[elementCountOfQueue2] = "O";
-                        queue2[elementCountOfQueue2] = customerName;
+                        repeatingCodesOfAddCustomer(elementCountOfQueue2, queue2Visualization, queue2, queueNo);
                         elementCountOfQueue2++;
-                        System.out.println(customerName + " is added to Queue 2");
                     } else {
                         System.out.println("Queue 2 is full, please try another queue!");
                     }
                     break;
                 case "3":
                     if (elementCountOfQueue3 < TOTAL_OF_QUEUE3) {
-                        System.out.print("Insert customer's name : ");
-                        String customerName = input.next();
-                        queue3Visualization[elementCountOfQueue3] = "O";
-                        queue3[elementCountOfQueue3] = customerName;
+                        repeatingCodesOfAddCustomer(elementCountOfQueue3, queue3Visualization, queue3, queueNo);
                         elementCountOfQueue3++;
-                        System.out.println(customerName + " is added to Queue 3");
                     } else {
                         System.out.println("Queue 3 is full, please try another queue!");
                     }
@@ -255,25 +243,29 @@ public class Task1 {
         sort(customersFromAll3Queues);
 
         // prints the sorted names
-        for (int i = 0; i < customersFromAll3Queues.length; i++) {
-            if (customersFromAll3Queues[i] != null) {
-                System.out.println(customersFromAll3Queues[i]);
+        for (String customersFromAll3Queue : customersFromAll3Queues) {
+            if (customersFromAll3Queue != null) {
+                System.out.println(customersFromAll3Queue);
             }
         }
     }
 
     public static void storeProgramDataIntoFile() {
         try {
-            FileWriter fileWriter = new FileWriter("text.txt");
+            FileWriter fileWriter = new FileWriter("store.txt");
+            // Write stock data
             fileWriter.write("Stock   : " + stock + "\n");
-            fileWriter.write("\nQueue 1 :\n");
+            // Write Queue 1 data
+            fileWriter.write("Queue 1 :" + "\n");
             for (int i = 0; i < elementCountOfQueue1; i++) {
                 fileWriter.write(queue1[i] + "\n");
             }
+            // Write Queue 2 data
             fileWriter.write("\nQueue 2 :\n");
             for (int i = 0; i < elementCountOfQueue2; i++) {
                 fileWriter.write(queue2[i] + "\n");
             }
+            // Write Queue 3 data
             fileWriter.write("\nQueue 3 :\n");
             for (int i = 0; i < elementCountOfQueue3; i++) {
                 fileWriter.write(queue3[i] + "\n");
@@ -281,32 +273,95 @@ public class Task1 {
             fileWriter.flush();
             fileWriter.close();
             System.out.println("Program data stored successfully in the text file!");
+            // Reload the data from the file
+            //loadProgramDataFromFile();
         } catch (IOException e) {
             System.out.println("Failed to process request: " + e.getMessage());
         }
     }
 
     public static void loadProgramDataFromFile() {
-        try (FileReader fileReader = new FileReader("text.txt");
+        try (FileReader fileReader = new FileReader("store.txt");
              BufferedReader bufferedReader = new BufferedReader(fileReader)) {
 
-            String stock = bufferedReader.readLine();
-            System.out.println(stock);
-            String line; // store each line read from the file
-            while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
-            } // Reads a line from the file using the readLine() method of the BufferedReader and assigns it to the variable called line
+            String stockLine = bufferedReader.readLine();
+            if (stockLine != null) {
+                String stockValue = stockLine.split(":")[1].trim();
+                stock = Integer.parseInt(stockValue);
+                System.out.println("Stock: " + stock);
+            }
+            String queue1Title = bufferedReader.readLine(); // Read the title line for Queue 1
+            if (queue1Title != null && queue1Title.equals("Queue 1 :")) {
+                // Read the elements of Queue 1
+                int queue1Size = 0;
+                String line;
+                while ((line = bufferedReader.readLine()) != null && !line.equals("")) {
+                    queue1[queue1Size++] = line;
+
+                }
+                System.out.println("Queue 1: ");
+                for (int i = 0; i < queue1Size; i++) {
+                    if (queue1[i] != null) {
+                        System.out.println(queue1[i]);
+                        queue1Visualization[i] = "0";
+                    }
+                }
+                System.out.println();
+
+            }
+            String queue2Title = bufferedReader.readLine(); // Read the title line for Queue 2
+            if (queue2Title != null && queue2Title.equals("Queue 2 :")) {
+                // Read the elements of Queue 2
+                int queue2Size = 0;
+                String line;
+                while ((line = bufferedReader.readLine()) != null && !line.equals("")) {
+                    queue2[queue2Size++] = line;
+                }
+                System.out.println("Queue 2: ");
+                for (int i = 0; i < queue2Size; i++) {
+                    if (queue2[i] != null) {
+                        System.out.println(queue2[i]);
+                        queue2Visualization[i] = "0";
+                    }
+                }
+                System.out.println();
+            }
+            String queue3Title = bufferedReader.readLine(); // Read the title line for Queue 3
+            if (queue3Title != null && queue3Title.equals("Queue 3 :")) {
+                // Read the elements of Queue 3
+                int queue3Size = 0;
+                String line;
+                while ((line = bufferedReader.readLine()) != null && !line.equals("")) {
+                    queue3[queue3Size++] = line;
+                }
+                System.out.println("Queue 3: ");
+                for (int i = 0; i < queue3Size; i++) {
+                    if (queue3[i] != null) {
+                        System.out.println(queue3[i]);
+                        queue3Visualization[i] = "0";
+                    }
+                }
+                System.out.println();
+            }
         } catch (IOException e) {
-            System.out.println("Failed to load data : " + e.getMessage());
+            System.out.println("Failed to load data: " + e.getMessage());
         }
     }
 
     public static void restockBurgerCount() {
         while (stock < 50) {
             stock += 5;
-
         }
         System.out.println("Burgers Restocked! Stock includes " + stock + " burgers");
+    }
+
+    public static void repeatingCodesOfAddCustomer(int elementCountOfQueue, String[] queueVisualization, String[] queue, String queueNo) {
+        Scanner input = new Scanner(System.in);
+        System.out.print("Insert customer's name : ");
+        String customerName = input.next();
+        queueVisualization[elementCountOfQueue] = "O";
+        queue[elementCountOfQueue] = customerName;
+        System.out.println(customerName + " is added to Queue " + queueNo);
     }
 
     /* This function shifts elements to left, the customer at the specified location
@@ -329,7 +384,6 @@ public class Task1 {
         for (String[] array : arrays) {
             arrayLength += array.length;
         }
-
         String[] mergedArray = new String[arrayLength];
         int currentIndex = 0; //keeps track of the current position of the mergedArray
 
@@ -339,10 +393,8 @@ public class Task1 {
                     mergedArray[currentIndex] = element;
                     currentIndex++;
                 }
-                ;
             }
         }
-
         return mergedArray;
     }
 
@@ -386,53 +438,19 @@ public class Task1 {
             option = input.next();
 
             switch (option) {
-                case "100":
-                case "VFQ":
-                    viewAllQueues(queue1Visualization, queue2Visualization, queue3Visualization);
-                    break;
-                case "101":
-                case "VEQ":
-                    viewEmptyQueues();
-                    break;
-                case "102":
-                case "ACQ":
-                    addCustomer();
-                    break;
-                case "103":
-                case "RCQ":
-                    removeCustomer();
-                    break;
-                case "104":
-                case "PCQ":
-                    removeServedCustomer();
-                    break;
-                case "105":
-                case "VCS":
-                    sortCustomersAlphabetically();
-                    break;
-                case "106":
-                case "SPD":
-                    storeProgramDataIntoFile();
-                    break;
-                case "107":
-                case "LPD":
-                    loadProgramDataFromFile();
-                    break;
-                case "108":
-                case "STK":
-                    System.out.println("Remaining stock count : " + stock);
-                    break;
-                case "109":
-                case "AFS":
-                    restockBurgerCount();
-                    break;
-                case "999":
-                case "EXT":
-                    System.out.println("Program's exiting....");
-                    break;
+                case "100", "VFQ" -> viewAllQueues(queue1Visualization, queue2Visualization, queue3Visualization);
+                case "101", "VEQ" -> viewEmptyQueues();
+                case "102", "ACQ" -> addCustomer();
+                case "103", "RCQ" -> removeCustomer();
+                case "104", "PCQ" -> removeServedCustomer();
+                case "105", "VCS" -> sortCustomersAlphabetically();
+                case "106", "SPD" -> storeProgramDataIntoFile();
+                case "107", "LPD" -> loadProgramDataFromFile();
+                case "108", "STK" -> System.out.println("Remaining stock count : " + stock);
+                case "109", "AFS" -> restockBurgerCount();
+                case "999", "EXT" -> System.out.println("Program's exiting....");
             }
             System.out.println();
         } while (!(option.equals("999") || option.equals("EXT")));
-
     }
 }
