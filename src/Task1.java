@@ -161,7 +161,7 @@ public class Task1 {
                     elementCountOfQueue2--;
                     System.out.println(customer + " is removed from queue 2 ");
                 } else {
-                    System.out.println("Please enter a valid position in queue1!");
+                    System.out.println("Please enter a valid position in queue2!");
                 }
                 break;
             case 3:
@@ -171,7 +171,7 @@ public class Task1 {
                     elementCountOfQueue3--;
                     System.out.println(customer + " is removed from queue 3 ");
                 } else {
-                    System.out.println("Please enter a valid position in queue1!");
+                    System.out.println("Please enter a valid position in queue3!");
                 }
                 break;
             default:
@@ -240,7 +240,7 @@ public class Task1 {
 
     public static void sortCustomersAlphabetically() {
         String[] customersFromAll3Queues = mergeAll3arrays(queue1, queue2, queue3);
-        sort(customersFromAll3Queues);
+        sortOut(customersFromAll3Queues);
 
         // prints the sorted names
         for (String customersFromAll3Queue : customersFromAll3Queues) {
@@ -304,6 +304,7 @@ public class Task1 {
                     if (queue1[i] != null) {
                         System.out.println(queue1[i]);
                         queue1Visualization[i] = "0";
+                        elementCountOfQueue1++;
                     }
                 }
                 System.out.println();
@@ -322,6 +323,7 @@ public class Task1 {
                     if (queue2[i] != null) {
                         System.out.println(queue2[i]);
                         queue2Visualization[i] = "0";
+                        elementCountOfQueue2++;
                     }
                 }
                 System.out.println();
@@ -339,6 +341,7 @@ public class Task1 {
                     if (queue3[i] != null) {
                         System.out.println(queue3[i]);
                         queue3Visualization[i] = "0";
+                        elementCountOfQueue3++;
                     }
                 }
                 System.out.println();
@@ -359,9 +362,13 @@ public class Task1 {
         Scanner input = new Scanner(System.in);
         System.out.print("Insert customer's name : ");
         String customerName = input.next();
-        queueVisualization[elementCountOfQueue] = "O";
-        queue[elementCountOfQueue] = customerName;
-        System.out.println(customerName + " is added to Queue " + queueNo);
+        if (customerName.matches("[a-zA-Z]+")) {
+            queueVisualization[elementCountOfQueue] = "O";
+            queue[elementCountOfQueue] = customerName;
+            System.out.println(customerName + " is added to Queue " + queueNo);
+        } else {
+            System.out.println("Please check the spellings of your name!");
+        }
     }
 
     /* This function shifts elements to left, the customer at the specified location
@@ -399,15 +406,27 @@ public class Task1 {
     }
 
     // using bubble sort to sort out the names alphabetically
-    private static void sort(String[] array) {
+
+    private static void sortOut(String[] array) {
         int n = array.length;
         for (int i = 0; i < n - 1; i++) {
             for (int j = 0; j < n - i - 1; j++) {
-                if (array[j] != null && array[j + 1] != null && array[j].compareTo(array[j + 1]) > 0) {
-                    // elements are swapped
-                    String temp = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = temp;
+                if (array[j] != null && array[j + 1] != null) {
+                    // Compare strings character by character (what actually compareTo() does)
+                    int minLength = Math.min(array[j].length(), array[j + 1].length());
+                    for (int k = 0; k < minLength; k++) {
+                        char char1 = array[j].charAt(k);
+                        char char2 = array[j + 1].charAt(k);
+                        if (char1 != char2) {
+                            // Swapping if characters are not in order
+                            if (char1 > char2) {
+                                String temp = array[j];
+                                array[j] = array[j + 1];
+                                array[j + 1] = temp;
+                            }
+                            break; // Exiting inner loop once characters are compared
+                        }
+                    }
                 }
             }
         }
