@@ -3,6 +3,7 @@ package Task2;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -22,10 +23,6 @@ public class Main {
     public static int servedCustomersCount = 0; //initially served customer count is 0
     public static int reservedBurgersCount = 50 + newBurgers - soldBurgers - stock;
 
-    //storing queue data
-    public static String[][] cashiers = new String[][]{
-            new String[2], new String[3], new String[5]
-    };
     //An array to sort customer names
     public static String[] names = new String[10];
 
@@ -34,9 +31,15 @@ public class Main {
             new int[10], new int[10]
     };
 
+    public static FoodQueue[] foodQueue = new FoodQueue[3];
+    public static ArrayList<String> waitingList = new ArrayList<>();
+
     public static Scanner input = new Scanner(System.in);
 
     public static void main(String[] args) {
+        foodQueue[0] = new FoodQueue(2);
+        foodQueue[1] = new FoodQueue(3);
+        foodQueue[2] = new FoodQueue(5);
         viewMenu();
     }
 
@@ -76,8 +79,11 @@ public class Main {
                 System.out.println();
                 viewMenu();
             }
-            case "102", "ACQ" -> FoodQueue.addCustomer();
-            case "103", "RCQ" -> {
+            case "102", "ACQ" -> {
+                addCustomer();
+                viewMenu();
+            }
+            /*case "103", "RCQ" -> {
                 removeCustomer();
             }
             case "104", "PCQ" -> {
@@ -108,7 +114,7 @@ public class Main {
                 restockBurgerCount();
                 System.out.println();
                 viewMenu();
-            }
+            }*/
             case "999", "EXT" -> {
                 System.out.println("Program's exiting....");
                 System.exit(0);
@@ -135,13 +141,13 @@ public class Main {
         System.out.println("*****************");
         System.out.println("*   Cashiers    *");
         System.out.println("*****************");
-        for (int i = 0; i < cashiers[2].length; i++) {
-            for (int j = 0; j < cashiers.length; j++) {
-                if (i >= cashiers[j].length) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < foodQueue.length; j++) {
+                if (i >= foodQueue[j].getCustomerQueue().length) {
                     System.out.print("      ");
                     continue;
                 }
-                if (cashiers[j][i] == null) {
+                if (foodQueue[j].getCustomerQueue()[i] == null) {
                     System.out.print("  X   ");
                 } else {
                     System.out.print("  O   ");
@@ -155,14 +161,12 @@ public class Main {
         System.out.println("*********************");
         System.out.println("*   Empty Queues    *");
         System.out.println("*********************");
-        for (int i = 0; i < cashiers.length; i++) {
-            boolean isEmpty = true;
-            for (int j = 0; j < cashiers[i].length; j++) {
-                if (cashiers[i][j] == null) {
+        for (int i = 0; i < foodQueue.length; i++) {
+            boolean isEmpty = false;
+            for (Customer customer : foodQueue[i].getCustomerQueue()) {
+                if (customer == null) {
                     isEmpty = true;
                     break;
-                } else {
-                    isEmpty = false;
                 }
             }
             if (isEmpty) {
@@ -173,6 +177,77 @@ public class Main {
         }
     }
 
+    public static void addCustomer() {
+        boolean detailLoop = true; //outer loop which takes the customer names
+        boolean burgerLoop = true; //inner loop which takes the burger amount needed
+
+        while (detailLoop) {
+            Customer customer = new Customer();
+
+            if(stock > 10){
+                System.out.print("Insert customer's first name : ");
+                customer.setFirstName(Main.input.next());
+                System.out.print("Insert customer's second name : ");
+                customer.setSecondName(Main.input.next());
+
+                //Validating customer names
+                if(customer.getFirstName().matches("[a-zA-Z]+") && customer.getSecondName().matches("[a-zA-Z]+")){
+                    detailLoop = false;
+                    while (burgerLoop){
+                        //Checking whether the burger amount is an integer
+                        try{
+                            //Asking for the burger requirement
+                            System.out.print("Insert the burger amount : ");
+                            customer.setNoOfBurgers(Main.input.nextInt());
+
+                            //Checking whether we can serve the required burger amount
+                            if(customer.getNoOfBurgers() <= stock && customer.getNoOfBurgers() > 0) {
+                                //placing the customer in the shortest possible queue
+                                for (int i = 0; i < 5; i++) {
+                                    for (int j = 0; j < foodQueue.length; j++) {
+                                        if(i>=foodQueue[j].getCustomerQueue().length) continue;
+                                        if(foodQueue[j].getCustomerQueue()[i] == null){
+                                            foodQueue[j].getCustomerQueue()[i] = customer;
+                                            i=5;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                //If all the queues are full adding the rest of the customers to waiting queue
+                                if(emptySlots == 0) {
+                                    waitingList.add(customer.getFullName());
+                                }else {
+                                    //reserve 5 burgers to the customer and empty slots are updated afterwards
+                                    stock -= customer.getNoOfBurgers();
+                                    reservedBurgersCount += customer.getNoOfBurgers();
+                                    emptySlots--;
+                                }
+                                //showing the low burger count warning
+                                lowBurgerCountWarning();
+
+                                burgerLoop = false;
+                                System.out.println();
+                                viewMenu();
+                                break;
+                            } else {
+                                System.out.println("Sorry! We are unable to supply your requirement, Please Try Again Later!");
+                            }
+                        } catch (InputMismatchException e) {
+                            System.out.println("Integer required");
+                            input.nextInt();
+                        }
+                    }
+                } else {
+                    System.out.println("Please check the spellings of your name!");
+                }
+            } else {
+                System.out.println("WARNING!! Low burger count, please re-stock burgers to serve customers");
+            }
+        }
+    }
+
+    /*
     public static void removeCustomer() {
         boolean removeCustomerLoop1 = true;
         boolean removeCustomerLoop2 = true;
@@ -421,6 +496,7 @@ public class Main {
             System.out.println("Failed to load data: " + e.getMessage());
         }
     }
+    */
 
     public static void restockBurgerCount() {
         while (stock < 50) {

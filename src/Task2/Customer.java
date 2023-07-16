@@ -37,6 +37,7 @@ public class Customer {
         }
     }
 
+    /*
     // Creation of the customer object (with firstName, secondName, noOfBurgers)
     public static Customer setNewCustomer(String[] customerDetails) {
         Customer customer = new Customer();
@@ -44,5 +45,5 @@ public class Customer {
         customer.setSecondName(customerDetails[1].toLowerCase());
         customer.setNoOfBurgers(Integer.parseInt(customerDetails[3]));
         return customer;
-    }
+    }*/
 }

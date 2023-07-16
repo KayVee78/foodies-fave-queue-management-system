@@ -10,7 +10,11 @@ public class FoodQueue {
         customerQueue = new Customer[size]; //created an array of Customer objects
     }
 
-    public static void addCustomer() {
+    public Customer[] getCustomerQueue() {
+        return customerQueue;
+    }
+
+    /*public static void addCustomer() {
         boolean detailLoop = true; //outer loop which takes the customer names
         boolean burgerLoop = true; //inner loop which takes the burger amount needed
 
@@ -82,7 +86,7 @@ public class FoodQueue {
                 System.out.println("WARNING!! Low burger count, please re-stock burgers to serve customers");
             }
         }
-    }
+    }*/
 
 
 }
