@@ -3,16 +3,10 @@ package Task2;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
-    /* Declaring constants according to the naming conventions mentioned in the Oracle Docs */
-    private static final int TOTAL_OF_QUEUE1 = 2;
-    private static final int TOTAL_OF_QUEUE2 = 3;
-    private static final int TOTAL_OF_QUEUE3 = 5;
     public static PrintWriter fileInput;
     public static int priceOfBurger = 650;
     public static int stock = 50;
@@ -104,13 +98,12 @@ public class Main {
                 System.out.println();
                 viewMenu();
             }
-            /*
+
             case "107", "LPD" -> {
                 loadProgramDataFromFile();
-                System.out.println();
                 viewMenu();
             }
-            */
+
             case "108", "STK" -> {
                 System.out.println("Remaining stock count : " + stock);
                 lowBurgerCountWarning();
@@ -294,7 +287,7 @@ public class Main {
                                     reservedBurgersCount -= removedCustomer.getNoOfBurgers();
                                     emptySlots++;
 
-                                    //updating the queueIncome as the customer is removed wihthout serving
+                                    //updating the queueIncome as the customer is removed without serving
                                     queueIncome[currentQueueNo] -= removedCustomer.getNoOfBurgers() * priceOfBurger;
 
                                     for (int i = currentPosition; i < lastElement; i++) {
@@ -414,7 +407,6 @@ public class Main {
                 }
             }
         }
-
         // bubble sorting the first 2 characters of each name
         for (int i = 0; i < count; i++) {
             if (names[i] == null || asciiVal[0][i] == 0) continue;
@@ -437,7 +429,6 @@ public class Main {
                 }
             }
         }
-
         //sorted name list
         int number = 1;
         for (String name : names) {
@@ -499,7 +490,6 @@ public class Main {
         }
     }
 
-    /*
     public static void loadProgramDataFromFile() {
         try {
             File file = new File("task2.txt");
@@ -527,34 +517,39 @@ public class Main {
                 //Queue part
                 else if (line.startsWith("Queue")) {
                     String[] queueTokens = line.split(":")[1].trim().split("\\s+");
+                    queueIncome[queueIndex] = Integer.parseInt(line.split(">")[1].trim().split("\\s+")[1].trim());
                     for (int i = 0; i < queueTokens.length; i++) {
-                        if (!queueTokens[i].equals("null")) {
-                            cashiers[queueIndex][i] = queueTokens[i];
-                        }
+                        if (queueTokens[i] == "") break;
+                        String[] customerAttributes = queueTokens[i].split("\\s+");
+                        foodQueue[queueIndex].getCustomerQueue()[i] = setCustomerLoaded(customerAttributes);
                     }
                     queueIndex++;
+                } else if (line.startsWith("Customers in Waiting Queue")) {
+                    String[] waitingQueueTokens = line.split(":")[1].trim().split(", ");
+                    for (int i = 0; i < waitingQueueTokens.length; i++) {
+                        if (waitingQueueTokens[i] == "") break;
+                        String[] waitingCustomerAttributes = waitingQueueTokens[i].split("\\s+");
+                        WaitingQueue.insert(setCustomerLoaded(waitingCustomerAttributes));
+                        WaitingQueue.customerCount--;
+                    }
+                    break;
                 }
             }
             fileReader.close();
 
             // printing saved data into the console
             String fileOutput = String.format("""
-                            Sold Burger Count      : %s\n
-                            Reserved Burger Count  : %s
-                            Remaining Burger Count : %s \n
-                            No. of Empty Queues    : %s
-                            Served Customers Count : %s \n
-                            Cashier 1              : %s
-                            Cashier 2              : %s
-                            Cashier 3              : %s
-                            """, soldBurgers, reservedBurgersCount, stock, emptySlots, servedCustomersCount,
-                    Arrays.toString(cashiers[0]), Arrays.toString(cashiers[1]), Arrays.toString(cashiers[2]));
+                    Sold Burger Count      : %s\n
+                    Reserved Burger Count  : %s
+                    Remaining Burger Count : %s \n
+                    No. of Empty Queues    : %s
+                    Served Customers Count : %s \n
+                    """, soldBurgers, reservedBurgersCount, stock, emptySlots, servedCustomersCount);
             System.out.println(fileOutput);
         } catch (IOException e) {
             System.out.println("Failed to load data: " + e.getMessage());
         }
     }
-    */
 
     public static void restockBurgerCount() {
         while (stock < 50) {
@@ -567,5 +562,14 @@ public class Main {
         String fName = nameParts[0].substring(0, 1).toUpperCase() + nameParts[0].substring(1);
         String sName = nameParts[1].substring(0, 1).toUpperCase() + nameParts[1].substring(1);
         fileInput.print(fName + " " + sName);
+    }
+
+    public static Customer setCustomerLoaded(String[] customerAttributes) {
+        Customer customer = new Customer();
+        customer.setFirstName(customerAttributes[0].toLowerCase());
+        customer.setSecondName(customerAttributes[1].toLowerCase());
+        customer.setNoOfBurgers(Integer.parseInt(customerAttributes[3]));
+
+        return customer;
     }
 }
