@@ -29,11 +29,18 @@ public class Customer {
         this.noOfBurgers = noOfBurgers;
     }
 
-    public String getFullName() {
+    /*public String getFullName() {
         if (firstName != null && secondName != null) {
             return firstName + " " + secondName;
         } else {
             return null;
         }
+    }*/
+
+    public String getFullName() {
+        if (firstName != null && secondName != null) {
+            return firstName + " " + secondName;
+        }
+        else return null;
     }
 }
