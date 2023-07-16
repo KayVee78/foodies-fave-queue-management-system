@@ -13,6 +13,7 @@ public class Main {
     private static final int TOTAL_OF_QUEUE1 = 2;
     private static final int TOTAL_OF_QUEUE2 = 3;
     private static final int TOTAL_OF_QUEUE3 = 5;
+    public static int priceOfBurger = 650;
     public static int stock = 50;
     public static int emptySlots = 10; //initially 10 empty slots of 3 cashiers
     public static int queueNo;
@@ -23,6 +24,7 @@ public class Main {
     public static int servedCustomersCount = 0; //initially served customer count is 0
     public static int reservedBurgersCount = 50 + newBurgers - soldBurgers - stock;
 
+    public static int[] queueIncome = new int[3];
     //An array to sort customer names
     public static String[] names = new String[10];
 
@@ -62,6 +64,7 @@ public class Main {
         System.out.println("107 or LPD:\tLoad Program Data from file.");
         System.out.println("108 or STK:\tView Remaining burgers Stock.");
         System.out.println("109 or AFS:\tAdd burgers to Stock.");
+        System.out.println("110 or IFQ:\tView the income of each queue.");
         System.out.println("999 or EXT:\tExit the Program.");
         System.out.println();
         Scanner input = new Scanner(System.in);
@@ -83,12 +86,14 @@ public class Main {
                 addCustomer();
                 viewMenu();
             }
-            /*case "103", "RCQ" -> {
+            case "103", "RCQ" -> {
                 removeCustomer();
             }
+
             case "104", "PCQ" -> {
                 removeServedCustomer();
             }
+            /*
             case "105", "VCS" -> {
                 sortCustomersAlphabetically();
                 System.out.println();
@@ -104,17 +109,24 @@ public class Main {
                 System.out.println();
                 viewMenu();
             }
+            */
             case "108", "STK" -> {
                 System.out.println("Remaining stock count : " + stock);
                 lowBurgerCountWarning();
                 System.out.println();
                 viewMenu();
             }
+
             case "109", "AFS" -> {
                 restockBurgerCount();
                 System.out.println();
                 viewMenu();
-            }*/
+            }
+            case "110", "IFQ" -> {
+                viewQueueIncome();
+                System.out.println();
+                viewMenu();
+            }
             case "999", "EXT" -> {
                 System.out.println("Program's exiting....");
                 System.exit(0);
@@ -184,40 +196,43 @@ public class Main {
         while (detailLoop) {
             Customer customer = new Customer();
 
-            if(stock > 10){
+            if (stock > 10) {
                 System.out.print("Insert customer's first name : ");
                 customer.setFirstName(Main.input.next());
                 System.out.print("Insert customer's second name : ");
                 customer.setSecondName(Main.input.next());
 
                 //Validating customer names
-                if(customer.getFirstName().matches("[a-zA-Z]+") && customer.getSecondName().matches("[a-zA-Z]+")){
+                if (customer.getFirstName().matches("[a-zA-Z]+") && customer.getSecondName().matches("[a-zA-Z]+")) {
                     detailLoop = false;
-                    while (burgerLoop){
+                    while (burgerLoop) {
                         //Checking whether the burger amount is an integer
-                        try{
+                        try {
                             //Asking for the burger requirement
                             System.out.print("Insert the burger amount : ");
                             customer.setNoOfBurgers(Main.input.nextInt());
 
                             //Checking whether we can serve the required burger amount
-                            if(customer.getNoOfBurgers() <= stock && customer.getNoOfBurgers() > 0) {
+                            if (customer.getNoOfBurgers() <= stock && customer.getNoOfBurgers() > 0) {
                                 //placing the customer in the shortest possible queue
                                 for (int i = 0; i < 5; i++) {
                                     for (int j = 0; j < foodQueue.length; j++) {
-                                        if(i>=foodQueue[j].getCustomerQueue().length) continue;
-                                        if(foodQueue[j].getCustomerQueue()[i] == null){
+                                        if (i >= foodQueue[j].getCustomerQueue().length) continue;
+                                        if (foodQueue[j].getCustomerQueue()[i] == null) {
                                             foodQueue[j].getCustomerQueue()[i] = customer;
-                                            i=5;
+
+                                            //income of Queue
+                                            queueIncome[j] += foodQueue[j].getCustomerQueue()[i].getNoOfBurgers() * priceOfBurger;
+                                            i = 5;
                                             break;
                                         }
                                     }
                                 }
 
                                 //If all the queues are full adding the rest of the customers to waiting queue
-                                if(emptySlots == 0) {
-                                    waitingList.add(customer.getFullName());
-                                }else {
+                                if (emptySlots == 0) {
+                                    WaitingQueue.insert(customer);
+                                } else {
                                     //reserve 5 burgers to the customer and empty slots are updated afterwards
                                     stock -= customer.getNoOfBurgers();
                                     reservedBurgersCount += customer.getNoOfBurgers();
@@ -247,7 +262,6 @@ public class Main {
         }
     }
 
-    /*
     public static void removeCustomer() {
         boolean removeCustomerLoop1 = true;
         boolean removeCustomerLoop2 = true;
@@ -267,25 +281,37 @@ public class Main {
                             int position = input.nextInt();
 
                             //Validating the position
-                            if (position >= 1 && position <= cashiers[currentQueueNo].length) {
+                            if (position >= 1 && position <= foodQueue[currentQueueNo].getCustomerQueue().length) {
                                 int currentPosition = position - 1;
-                                lastElement = cashiers[currentPosition].length - 1;
+                                lastElement = foodQueue[currentQueueNo].getCustomerQueue().length - 1;
+                                Customer removedCustomer = foodQueue[currentQueueNo].getCustomerQueue()[currentPosition];
 
                                 //updating the rest of the positions after the removal
-                                if (cashiers[currentQueueNo][currentPosition] != null) {
+                                if (removedCustomer != null) {
+                                    //updating the burger stock as the customer is not been served
+                                    stock += removedCustomer.getNoOfBurgers();
+                                    reservedBurgersCount -= removedCustomer.getNoOfBurgers();
+                                    emptySlots++;
+
+                                    //updating the queueIncome as the customer is removed wihthout serving
+                                    queueIncome[currentQueueNo] -= removedCustomer.getNoOfBurgers() * priceOfBurger;
+
                                     for (int i = currentPosition; i < lastElement; i++) {
-                                        cashiers[currentQueueNo][i] = cashiers[currentQueueNo][i + 1];
+                                        foodQueue[currentQueueNo].getCustomerQueue()[i] = foodQueue[currentQueueNo].getCustomerQueue()[i + 1];
                                     }
-                                    cashiers[currentQueueNo][lastElement] = null;
+
+                                    //Adding customers from the waiting queue to the food queue
+                                    if (WaitingQueue.customerCount == 0) {
+                                        foodQueue[currentQueueNo].getCustomerQueue()[lastElement] = null;
+                                    } else {
+                                        foodQueue[currentQueueNo].getCustomerQueue()[lastElement] = WaitingQueue.remove();
+
+                                        //income of the newly added customer (Update)
+                                        queueIncome[currentQueueNo] += foodQueue[currentQueueNo].getCustomerQueue()[lastElement].getNoOfBurgers() * priceOfBurger;
+                                    }
 
                                     System.out.println("Customer is removed from queue " + queueNo);
-
-                                    // increasing the burger count as the customer had not been served
-                                    stock += 5;
-                                    reservedBurgersCount -= 5;
-                                    emptySlots++;
                                     removeCustomerLoop2 = false;
-
                                 } else {
                                     System.out.println("This slot is already empty!\n");
                                 }
@@ -317,21 +343,27 @@ public class Main {
                 //Checking if the queue number entered is a cashier no.
                 if (queueNo >= 1 && queueNo <= 3) {
                     currentQueueNo = queueNo - 1;
-                    int lastElement = cashiers[currentQueueNo].length - 1;
+                    int lastElement = foodQueue[currentQueueNo].getCustomerQueue().length - 1;
 
-                    // removing first customer in line and updating the rest
-                    if (cashiers[currentQueueNo][0] != null) {
-                        for (int i = 0; i < lastElement; i++) {
-                            cashiers[currentQueueNo][i] = cashiers[currentQueueNo][i + 1];
-                        }
-                        cashiers[currentQueueNo][lastElement] = null;
-                        System.out.println("Served customer is removed from queue " + queueNo);
 
-                        // updating soldBurgers and servedCustomersCount
-                        soldBurgers += 5;
+                    if (foodQueue[currentQueueNo].getCustomerQueue()[0] != null) {
+                        soldBurgers += foodQueue[currentQueueNo].getCustomerQueue()[0].getNoOfBurgers();
                         servedCustomersCount += 1;
                         emptySlots++;
-                        reservedBurgersCount -= 5;
+                        reservedBurgersCount -= foodQueue[currentQueueNo].getCustomerQueue()[0].getNoOfBurgers();
+
+                        // removing first customer in line and updating the rest
+                        for (int i = 0; i < lastElement; i++) {
+                            foodQueue[currentQueueNo].getCustomerQueue()[i] = foodQueue[currentQueueNo].getCustomerQueue()[i + 1];
+                        }
+
+                        //Adding customers from the waiting queue to the food queue
+                        if (WaitingQueue.customerCount == 0) {
+                            foodQueue[currentQueueNo].getCustomerQueue()[lastElement] = null;
+                        } else {
+                            foodQueue[currentQueueNo].getCustomerQueue()[lastElement] = WaitingQueue.remove();
+                        }
+                        System.out.println("Served customer is removed from queue " + queueNo);
 
                         removeServedCustomerLoop = false;
                         System.out.println();
@@ -349,6 +381,16 @@ public class Main {
         }
     }
 
+    public static void viewQueueIncome() {
+        System.out.println("*********************");
+        System.out.println("*   Queue Income    *");
+        System.out.println("*********************");
+        for (int i = 0; i < queueIncome.length; i++) {
+            System.out.println("Queue " + (i + 1) + " : Rs." + queueIncome[i]);
+        }
+    }
+
+    /*
     //Referred a Tutorial for sorting
     public static void sortCustomersAlphabetically() {
         // adding names of customers to an array named names

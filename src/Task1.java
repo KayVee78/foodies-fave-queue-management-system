@@ -198,7 +198,7 @@ public class Task1 {
                     }
 
                 } else {
-                    System.out.println("Queue1 is empty! Please try another one");
+                    System.out.println("Queue1 is full! Please try another one");
                 }
                 break;
             case 2:
@@ -214,7 +214,7 @@ public class Task1 {
                     }
 
                 } else {
-                    System.out.println("Queue2 is empty! Please try another one");
+                    System.out.println("Queue2 is full! Please try another one");
                 }
                 break;
             case 3:
@@ -230,7 +230,7 @@ public class Task1 {
                     }
 
                 } else {
-                    System.out.println("Queue3 is empty! Please try another one");
+                    System.out.println("Queue3 is full! Please try another one");
                 }
                 break;
             default:
@@ -251,27 +251,27 @@ public class Task1 {
     }
 
     public static void storeProgramDataIntoFile() {
-        try {
-            FileWriter fileWriter = new FileWriter("store.txt");
+        try (FileWriter fileWriter = new FileWriter("store.txt");
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+
             // Write stock data
-            fileWriter.write("Stock   : " + stock + "\n");
+            bufferedWriter.write("Stock   : " + stock + "\n");
             // Write Queue 1 data
-            fileWriter.write("Queue 1 :" + "\n");
+            bufferedWriter.write("Queue 1 :" + "\n");
             for (int i = 0; i < elementCountOfQueue1; i++) {
-                fileWriter.write(queue1[i] + "\n");
+                bufferedWriter.write(queue1[i] + "\n");
             }
             // Write Queue 2 data
-            fileWriter.write("\nQueue 2 :\n");
+            bufferedWriter.write("\nQueue 2 :\n");
             for (int i = 0; i < elementCountOfQueue2; i++) {
-                fileWriter.write(queue2[i] + "\n");
+                bufferedWriter.write(queue2[i] + "\n");
             }
             // Write Queue 3 data
-            fileWriter.write("\nQueue 3 :\n");
+            bufferedWriter.write("\nQueue 3 :\n");
             for (int i = 0; i < elementCountOfQueue3; i++) {
-                fileWriter.write(queue3[i] + "\n");
+                bufferedWriter.write(queue3[i] + "\n");
             }
-            fileWriter.flush();
-            fileWriter.close();
+            bufferedWriter.flush();
             System.out.println("Program data stored successfully in the text file!");
             // Reload the data from the file
             //loadProgramDataFromFile();
@@ -468,6 +468,7 @@ public class Task1 {
                 case "108", "STK" -> System.out.println("Remaining stock count : " + stock);
                 case "109", "AFS" -> restockBurgerCount();
                 case "999", "EXT" -> System.out.println("Program's exiting....");
+                default -> System.out.println("Please enter a valid option!");
             }
             System.out.println();
         } while (!(option.equals("999") || option.equals("EXT")));
