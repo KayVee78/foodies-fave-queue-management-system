@@ -132,43 +132,57 @@ public class Main {
         }
     }
 
-    static void getQueue() {
+    public static void getQueue() {
         System.out.print("Choose a queue to proceed (1, 2 or 3) : ");
         queueNo = input.nextInt();
     }
 
-    static void lowBurgerCountWarning() {
+    public static void capitalizeName(String[] nameParts) {
+        String fName = nameParts[0].substring(0, 1).toUpperCase() + nameParts[0].substring(1);
+        String sName = nameParts[1].substring(0, 1).toUpperCase() + nameParts[1].substring(1);
+        fileInput.print(fName + " " + sName);
+    }
+
+    public static void lowBurgerCountWarning() {
         if (stock <= 10) {
             System.out.println("WARNING!! Low burger count, please re-stock burgers to serve customers");
         }
     }
 
-    static void viewAllQueues() {
+    //OPTION-100 Visual representation of the 3 queues O-occupied X-empty
+    public static void viewAllQueues() {
         System.out.println("*****************");
         System.out.println("*   Cashiers    *");
         System.out.println("*****************");
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < foodQueue.length; j++) {
-                if (i >= foodQueue[j].getCustomerQueue().length) {
+        for (int i = 0; i < 5; i++) { //outer loop iterates for 5 (maximum no of customers that can be in a col)
+            //inner loop iterates through the elements of foodQueue array
+            for (FoodQueue queue : foodQueue) {
+                //checks if the current position getting iterated is greater than the size of elements in that particular foodQueue array
+                //if so it will print an empty space
+                if (i >= queue.getCustomerQueue().length) {
                     System.out.print("      ");
                     continue;
                 }
-                if (foodQueue[j].getCustomerQueue()[i] == null) {
+                //checking for the availability of customer elements in the array
+                if (queue.getCustomerQueue()[i] == null) {
                     System.out.print("  X   ");
                 } else {
                     System.out.print("  O   ");
                 }
             }
-            System.out.println("");
+            System.out.println(); //hops  to a new line after each iteration
         }
     }
 
+    //OPTION-101 Visualising OCCUPIED if all the slots are taken ad EMPTY if at least one empty slot is available
     public static void viewEmptyQueues() {
         System.out.println("*********************");
         System.out.println("*   Empty Queues    *");
         System.out.println("*********************");
+        //iterates through the foodQueue array
         for (int i = 0; i < foodQueue.length; i++) {
-            boolean isEmpty = false;
+            boolean isEmpty = false; //variable that checks whether the slot is empty or not
+            //iterates through the customer objects of the current queue
             for (Customer customer : foodQueue[i].getCustomerQueue()) {
                 if (customer == null) {
                     isEmpty = true;
@@ -183,13 +197,13 @@ public class Main {
         }
     }
 
+    //OPTION-102 Adding customer to queue
     public static void addCustomer() {
         boolean detailLoop = true; //outer loop which takes the customer names
         boolean burgerLoop = true; //inner loop which takes the burger amount needed
 
         while (detailLoop) {
             Customer customer = new Customer();
-
             if (stock > 10) {
                 System.out.print("Insert customer's first name : ");
                 customer.setFirstName(Main.input.next());
@@ -222,7 +236,6 @@ public class Main {
                                         }
                                     }
                                 }
-
                                 //If all the queues are full adding the rest of the customers to waiting queue
                                 if (emptySlots == 0) {
                                     WaitingQueue.insert(customer);
@@ -243,7 +256,7 @@ public class Main {
                                 System.out.println("Sorry! We are unable to supply your requirement, Please Try Again Later!");
                             }
                         } catch (InputMismatchException e) {
-                            System.out.println("Integer required");
+                            System.out.println("Please insert a numeric value");
                             input.nextInt();
                         }
                     }
@@ -256,6 +269,7 @@ public class Main {
         }
     }
 
+    //OPTION-103 Remove a customer (without serving)
     public static void removeCustomer() {
         boolean removeCustomerLoop1 = true;
         boolean removeCustomerLoop2 = true;
@@ -266,7 +280,7 @@ public class Main {
                 getQueue();
                 currentQueueNo = queueNo - 1;
 
-                //Checking if the queue number entered is a cashier no.
+                //Checking if the queue number entered is valid
                 if (queueNo >= 1 && queueNo <= 3) {
                     removeCustomerLoop1 = false;
                     while (removeCustomerLoop2) {
@@ -274,7 +288,7 @@ public class Main {
                             System.out.print("Choose a customer's position : ");
                             int position = input.nextInt();
 
-                            //Validating the position
+                            //Validating the position of the customer that need to be removed
                             if (position >= 1 && position <= foodQueue[currentQueueNo].getCustomerQueue().length) {
                                 int currentPosition = position - 1;
                                 lastElement = foodQueue[currentQueueNo].getCustomerQueue().length - 1;
@@ -304,19 +318,17 @@ public class Main {
                                         queueIncome[currentQueueNo] += foodQueue[currentQueueNo].getCustomerQueue()[lastElement].getNoOfBurgers() * priceOfBurger;
                                         emptySlots--;
                                     }
-
                                     System.out.println("Customer is removed from queue " + queueNo);
                                     removeCustomerLoop2 = false;
                                 } else {
                                     System.out.println("This slot is already empty!\n");
                                 }
                                 viewMenu();
-
                             } else {
                                 System.out.println("Please enter a valid position!");
                             }
                         } catch (InputMismatchException e) {
-                            System.out.println("Integer required");
+                            System.out.println("Please insert a numeric value");
                             input.nextInt();
                         }
                     }
@@ -324,12 +336,13 @@ public class Main {
                     System.out.println("Please insert a valid queue number!");
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Integer required");
+                System.out.println("Please insert a numeric value");
                 input.nextInt();
             }
         }
     }
 
+    //OPTION-104 Remove a customer (after serving)
     static void removeServedCustomer() {
         boolean removeServedCustomerLoop = true;
         while (removeServedCustomerLoop) {
@@ -342,9 +355,11 @@ public class Main {
 
 
                     if (foodQueue[currentQueueNo].getCustomerQueue()[0] != null) {
+                        //tracking burgers sold
                         soldBurgers += foodQueue[currentQueueNo].getCustomerQueue()[0].getNoOfBurgers();
-                        servedCustomersCount += 1;
+                        servedCustomersCount += 1; //tracking served customer count
                         emptySlots++;
+                        //tracking the burgers reserved
                         reservedBurgersCount -= foodQueue[currentQueueNo].getCustomerQueue()[0].getNoOfBurgers();
 
                         // removing first customer in line and updating the rest
@@ -358,7 +373,7 @@ public class Main {
                         } else {
                             foodQueue[currentQueueNo].getCustomerQueue()[lastElement] = WaitingQueue.remove();
 
-                            //income update
+                            //tracking the income update of the served customer
                             queueIncome[currentQueueNo] += foodQueue[currentQueueNo].getCustomerQueue()[lastElement].getNoOfBurgers() * priceOfBurger;
                             emptySlots--;
                         }
@@ -374,31 +389,22 @@ public class Main {
                     System.out.println("Please insert a valid queue number!");
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Integer required");
+                System.out.println("Please insert a numeric value");
                 input.nextInt();
             }
         }
     }
 
-    public static void viewQueueIncome() {
-        System.out.println("*********************");
-        System.out.println("*   Queue Income    *");
-        System.out.println("*********************");
-        for (int i = 0; i < queueIncome.length; i++) {
-            System.out.println("Queue " + (i + 1) + " : Rs." + queueIncome[i]);
-        }
-    }
-
-    //Referred a Tutorial for sorting
+    //OPTION-105 View Customers Sorted in alphabetical order
     public static void sortCustomersAlphabetically() {
-        // adding names of customers to an array named names
+        //followed a documentation for ascii value sorting
         int count = 0;
         for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < foodQueue.length; j++) {
+            for (FoodQueue queue : foodQueue) {
                 // adding ascii values of first 2 characters to asciiValues array
-                if (i >= foodQueue[j].getCustomerQueue().length) continue;
-                if (foodQueue[j].getCustomerQueue()[i] != null) {
-                    names[count] = foodQueue[j].getCustomerQueue()[i].getFullName().toLowerCase();
+                if (i >= queue.getCustomerQueue().length) continue;
+                if (queue.getCustomerQueue()[i] != null) {
+                    names[count] = queue.getCustomerQueue()[i].getFullName().toLowerCase();
                     asciiVal[0][count] = names[count].charAt(0);
                     if (names[count].length() > 1) {
                         asciiVal[1][count] = names[count].charAt(1);
@@ -407,29 +413,29 @@ public class Main {
                 }
             }
         }
-        // bubble sorting the first 2 characters of each name
+        //first two characters are swapped (using bubble sorting)
         for (int i = 0; i < count; i++) {
             if (names[i] == null || asciiVal[0][i] == 0) continue;
             for (int j = 0; j < count; j++) {
                 if (asciiVal[0][i] < asciiVal[0][j] || (asciiVal[0][i] == asciiVal[0][j] && asciiVal[1][i] < asciiVal[1][j])) {
-                    // Swapping names
+                    //names are swapped
                     String temp = names[j];
                     names[j] = names[i];
                     names[i] = temp;
 
-                    // Swapping first character values
-                    int temp1 = asciiVal[0][j];
+                    //first character is swapped
+                    int tempVal1 = asciiVal[0][j];
                     asciiVal[0][j] = asciiVal[0][i];
-                    asciiVal[0][i] = temp1;
+                    asciiVal[0][i] = tempVal1;
 
-                    // Swapping second character values
-                    int temp2 = asciiVal[1][j];
+                    //second character is swapped
+                    int tempVal2 = asciiVal[1][j];
                     asciiVal[1][j] = asciiVal[1][i];
-                    asciiVal[1][i] = temp2;
+                    asciiVal[1][i] = tempVal2;
                 }
             }
         }
-        //sorted name list
+        //sorting done
         int number = 1;
         for (String name : names) {
             if (name != null) {
@@ -441,40 +447,28 @@ public class Main {
         }
     }
 
+    //OPTION-106 Necessary program data are stored in a file
     public static void storeProgramDataIntoFile() {
         int size = 10;
         try {
             // creating and writing the file
             fileInput = new PrintWriter("task2.txt");
-
             //Main Data
             String mainData = String.format("""
-                    Sold Burger Count      : %s \n
+                    Sold Burger Count      : %s\040
+                                    
                     Reserved Burger Count  : %s
-                    Remaining Burger Count : %s \n
+                    
+                    Remaining Burger Count : %s\040
+                                        
                     """, soldBurgers, reservedBurgersCount, stock);
-
             fileInput.write(mainData);
-
-            //Queue data
-            for (int i = 0; i < 3; i++) {
-                fileInput.write(String.format("Cashier %s   -   [Rs. %05d]    : ", (i + 1), queueIncome[i]));
-                for (int j = 0; j < 5; j++) {
-                    if (j >= foodQueue[i].getCustomerQueue().length) continue;
-                    if (foodQueue[i].getCustomerQueue()[j] != null) {
-                        capitalizeName(foodQueue[i].getCustomerQueue()[j].getFullName().split(" "));
-                        if (j + 1 != foodQueue[i].getCustomerQueue().length) {
-                            if (foodQueue[i].getCustomerQueue()[j + 1] != null) fileInput.print(", ");
-                        }
-                    }
-                }
-                fileInput.println(" ");
-            }
-
             //other Data
-            String otherData = String.format("""
-                    \nNo.of Empty Slots              : %s \n
-                    No.of Waiting Queue Customers  : %s\n
+            String otherData = String.format("""                     
+                    No.of Empty Slots              : %s\040
+                                        
+                    No.of Waiting Queue Customers  : %s
+                                        
                     """, emptySlots, WaitingQueue.customerCount);
             fileInput.write(otherData);
 
@@ -490,6 +484,7 @@ public class Main {
         }
     }
 
+    //OPTION-107 Loading stored data from the text file
     public static void loadProgramDataFromFile() {
         try {
             File file = new File("task2.txt");
@@ -497,9 +492,8 @@ public class Main {
 
             //needed local variables for this method
             String line;
-            int queueIndex = 0;
 
-            // reading and adding values to all variables
+            //reading data
             while (fileReader.hasNextLine()) {
                 line = fileReader.nextLine();
 
@@ -514,43 +508,29 @@ public class Main {
                 } else if (line.startsWith("Served Customers Count")) {
                     servedCustomersCount = Integer.parseInt(line.split(":")[1].trim());
                 }
-                //Queue part
-                else if (line.startsWith("Queue")) {
-                    String[] queueTokens = line.split(":")[1].trim().split("\\s+");
-                    queueIncome[queueIndex] = Integer.parseInt(line.split(">")[1].trim().split("\\s+")[1].trim());
-                    for (int i = 0; i < queueTokens.length; i++) {
-                        if (queueTokens[i] == "") break;
-                        String[] customerAttributes = queueTokens[i].split("\\s+");
-                        foodQueue[queueIndex].getCustomerQueue()[i] = setCustomerLoaded(customerAttributes);
-                    }
-                    queueIndex++;
-                } else if (line.startsWith("Customers in Waiting Queue")) {
-                    String[] waitingQueueTokens = line.split(":")[1].trim().split(", ");
-                    for (int i = 0; i < waitingQueueTokens.length; i++) {
-                        if (waitingQueueTokens[i] == "") break;
-                        String[] waitingCustomerAttributes = waitingQueueTokens[i].split("\\s+");
-                        WaitingQueue.insert(setCustomerLoaded(waitingCustomerAttributes));
-                        WaitingQueue.customerCount--;
-                    }
-                    break;
-                }
             }
             fileReader.close();
 
-            // printing saved data into the console
+            //loading stored data to the console
             String fileOutput = String.format("""
-                    Sold Burger Count      : %s\n
+                    Sold Burger Count      : %s
+                                        
                     Reserved Burger Count  : %s
-                    Remaining Burger Count : %s \n
-                    No. of Empty Queues    : %s
-                    Served Customers Count : %s \n
-                    """, soldBurgers, reservedBurgersCount, stock, emptySlots, servedCustomersCount);
+                    
+                    Remaining Burger Count : %s\040
+                                        
+                    No. of Empty slots    : %s\040
+                    
+                    No.of Waiting Queue Customers  : %s
+                                        
+                    """, soldBurgers, reservedBurgersCount, stock, emptySlots, WaitingQueue.customerCount);
             System.out.println(fileOutput);
         } catch (IOException e) {
             System.out.println("Failed to load data: " + e.getMessage());
         }
     }
 
+    //OPTION-109 Restock burger count (always stock must be restocked to 50 whenever the burger count is low)
     public static void restockBurgerCount() {
         while (stock < 50) {
             stock += 5;
@@ -558,18 +538,16 @@ public class Main {
         System.out.println("Burgers Restocked! Stock includes " + stock + " burgers");
     }
 
-    public static void capitalizeName(String[] nameParts) {
-        String fName = nameParts[0].substring(0, 1).toUpperCase() + nameParts[0].substring(1);
-        String sName = nameParts[1].substring(0, 1).toUpperCase() + nameParts[1].substring(1);
-        fileInput.print(fName + " " + sName);
+    //OPTION-110 View income of the particular queues
+    public static void viewQueueIncome() {
+        System.out.println("*********************");
+        System.out.println("*   Queue Income    *");
+        System.out.println("*********************");
+        for (int i = 0; i < queueIncome.length; i++) {
+            System.out.println("Queue " + (i + 1) + " : Rs." + queueIncome[i]);
+        }
     }
 
-    public static Customer setCustomerLoaded(String[] customerAttributes) {
-        Customer customer = new Customer();
-        customer.setFirstName(customerAttributes[0].toLowerCase());
-        customer.setSecondName(customerAttributes[1].toLowerCase());
-        customer.setNoOfBurgers(Integer.parseInt(customerAttributes[3]));
 
-        return customer;
-    }
+
 }
