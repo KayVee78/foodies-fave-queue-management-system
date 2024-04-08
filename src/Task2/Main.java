@@ -249,6 +249,7 @@ public class Main {
                                 lowBurgerCountWarning();
 
                                 burgerLoop = false;
+                                System.out.println(customer.getFirstName()+" is added to the queue");
                                 System.out.println();
                                 viewMenu();
                                 break;
